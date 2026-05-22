@@ -1,9 +1,7 @@
 /**************************************************************************
- Project: EV market entry, dual expansion, and fleet decarbonization
- Purpose: Annotated Stata code for estimating ownership expansion, ICEV spillover,
-          diagnostic tests, exploratory channel analyses, and alternative treatment checks.
 
- Notes for readers:
+
+ Notes:
    1. Panel unit: id
    2. Time variable: ym
    3. Baseline treatment: t10i3
@@ -23,28 +21,9 @@
       - r(#): number of factors for interactive fixed effects where applicable
       - nlambda(30): tuning grid for matrix completion where applicable
 
- Items to verify before submission:
-   A. In the FE specification for lnnsales below, xinfra is included as a control.
-      Confirm whether this is intentional; other main specifications use the
-      core control set without xinfra.
-   B. If xinfra, xaicar, xevam, etc. are interaction terms, ensure that their
-      construction is documented in the replication file or codebook.
 **************************************************************************/
 
 
-/**************************************************************************
- 0. Recommended project setup
-**************************************************************************/
-
-* Clear previous stored results if needed
-* clear all
-* set more off
-
-* Optional: open a log file for reproducibility
-* log using "ownership_expansion_analysis.log", replace text
-
-* Optional: declare panel structure if not already declared
-* xtset id ym
 
 
 /**************************************************************************
@@ -96,12 +75,11 @@ mat list e(coefs)
 
 
 * 2.2 Fixed effects specification
-* Note: xinfra is included here in the original code. Confirm whether it should
-*       be included here but not in the other main ownership specifications.
+
 fect lnnsales, ///
     treat(t10i3) unit(id) time(ym) ///
     method("fe") ///
-    cov(xinfra GDPper GDPrate pop income pass aqi pubexp) ///
+    cov( GDPper GDPrate pop income pass aqi pubexp) ///
     se nboots(10000)
 
 mat list e(ATT)
@@ -384,8 +362,3 @@ mat list e(ATT)
 mat list e(coefs)
 
 
-/**************************************************************************
- 9. Optional: close log
-**************************************************************************/
-
-* log close
